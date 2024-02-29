@@ -20,7 +20,7 @@ function HuskerForm({activeStep, setActiveStep, isHuskerthon, setUserName, setAm
     firstName:{
       value:'',
       error:false,
-      errorMessage:'You must enter a first name'
+      errorMessage:'You must enter a first nam'
     },
     lastName:{
       value:'',
