@@ -7,15 +7,9 @@ import Typography from '@mui/material/Typography';
 const images = [
   {
     url: '/huskerthon.jpg',
-    title: 'HuskerThon',
-    width: '50%',
+    title: 'Check In',
+    width: '100%',
     name: 'huskerthon'
-  },
-  {
-    url: '/battleofbands.png',
-    title: 'Battle of the Bands',
-    width: '50%',
-    name: 'battleofthenbands'
   }
 ];
 
@@ -92,15 +86,11 @@ function click(name, activeStep, setActiveStep, setisHuskerthon) {
   }
   setActiveStep(activeStep + 1)
 
-  console.log(activeStep)
 }
 
 const IntroForm = ({activeStep, setActiveStep, setisHuskerthon}) => {
   return (
     <React.Fragment>
-      <Typography variant="h6" gutterBottom mt={3}>
-        You are here for:
-      </Typography>
       <Box sx={{ display: 'flex', flexWrap: 'wrap', minWidth: 300, width: '100%' }}>
         {images.map((image) => (
           <ImageButton

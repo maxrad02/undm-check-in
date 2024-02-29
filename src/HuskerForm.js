@@ -11,16 +11,15 @@ import { LocalizationProvider } from '@mui/x-date-pickers/LocalizationProvider';
 import { DatePicker } from '@mui/x-date-pickers/DatePicker';
 import Button from '@mui/material/Button';
 import Box from '@mui/material/Box';
-import FormControl from '@mui/material/FormControl';
 
-
-function HuskerForm({activeStep, setActiveStep, isHuskerthon, setUserName, setAmountRaised, setShirtSize}) {
+function HuskerForm({activeStep, setActiveStep, isHuskerthon, setUserName, setAmountRaised, setShirtSize, setFinalScreenStep, setDinnerGroup}) {
+  const [btnDisabled, setBtnDisabled] = React.useState(false)
   const [date, setDate] = React.useState();
   const [formValues, setFormValues] = React.useState({
     firstName:{
       value:'',
       error:false,
-      errorMessage:'You must enter a first nam'
+      errorMessage:'You must enter a first name'
     },
     lastName:{
       value:'',
@@ -47,6 +46,9 @@ function HuskerForm({activeStep, setActiveStep, isHuskerthon, setUserName, setAm
       error:false,
       errorMessage:'You must choose your job title'
     },
+    commitedCrime:{
+      value:false
+    },
     abuse:{
       value:false,
       error:false,
@@ -56,28 +58,36 @@ function HuskerForm({activeStep, setActiveStep, isHuskerthon, setUserName, setAm
       value:false,
       error:false,
       errorMessage:'You must choose your job title'
+    },
+    phoneNumber:{
+      value: false,
+      error:false,
+      errorMessage:'You must choose your job title'
     }
   })
 
-  async function hitEndpoint() {
-    console.log(`https://checkinbackendryanbrown.azurewebsites.net/checkinhuskerthon/${formValues.firstName.value}/${formValues.lastName.value}/${formValues.email.value}/${formValues.email.value}/${formValues.nuid.value}`)
+  async function hitHuskerthonEndpoint() {
     const response = await fetch(
-      `https://checkinbackendryanbrown.azurewebsites.net/checkinhuskerthon/${formValues.firstName.value}/${formValues.lastName.value}/${formValues.email.value}/${formValues.email.value}/${formValues.nuid.value}`,
-      {
-        method: "post",
-        headers: { "Content-Type": "application/json" },
-      }
+      `https://checkinbackend20240218163129.azurewebsites.net/checkinhuskerthon/${formValues.firstName.value}/${formValues.lastName.value}/${formValues.email.value}/${formValues.email.value}/${formValues.nuid.value}/${formValues.phoneNumber.value}`
     );
     const json = await response.json();
-    setUserName(json.firstName)
+    console.log(json);
+    setUserName(json.firstName + " " +json.lastName)
     setAmountRaised(json.totalRaised)
     setShirtSize(json.shirtSize)
-    console.log(json)
+    setDinnerGroup(json.dinnerGroup)
   }
-
-  function handleHuskerSubmit(){
-    // console.log("hi")
-    // if (formValues.firstName.value === '')
+  async function hitBattleOfBandsEndpoint() {
+    const response = await fetch(
+      `https://checkinbackendryanbrown.azurewebsites.net/battleofbands/${formValues.firstName.value}/${formValues.lastName.value}/${formValues.email.value}/${formValues.nuid.value}`
+    );
+    const json = await response.json();
+    setUserName(json.firstName + " " +json.lastName)
+    setAmountRaised(json.totalRaised)
+    setShirtSize(json.shirtSize)
+    setDinnerGroup(json.dinnerGroup)
+  }
+  async function handleHuskerSubmit(){
     const formFields = Object.keys(formValues);
     let newFormValues = {...formValues}
 
@@ -85,7 +95,6 @@ function HuskerForm({activeStep, setActiveStep, isHuskerthon, setUserName, setAm
     let crimeFlag = false
     for (let index = 0; index < formFields.length; index++) {
       const currentField = formFields[index];
-      const currentValue = formValues[currentField].value;
 
       newFormValues = {
         ...newFormValues,
@@ -117,6 +126,14 @@ function HuskerForm({activeStep, setActiveStep, isHuskerthon, setUserName, setAm
           crimeFlag = true
         }
       }
+      else if(index === 6){
+        if(currentValue === true){
+          crimeFlag = true
+        }
+      }
+      else if(index === 9){
+
+      }
       else{
         if(currentValue === false){
           flag = true
@@ -136,17 +153,26 @@ function HuskerForm({activeStep, setActiveStep, isHuskerthon, setUserName, setAm
 
     if (flag === false){
       if (crimeFlag === true){
-        alert("Please see someone at the desk")
+        setFinalScreenStep(3)
+        console.log(newFormValues)
       }
-      // hit endpoint
-      hitEndpoint()
+      else{
+        if(isHuskerthon === true){
+          setBtnDisabled(true)
+          setFinalScreenStep(1)
+          await hitHuskerthonEndpoint()
+        }else{
+          setBtnDisabled(true)
+          setFinalScreenStep(2)
+          await hitBattleOfBandsEndpoint()
+        }
+      }
       setActiveStep(activeStep + 1)
     }
   }
 
   const handleChange = (e) => {
     const {name, value} = e.target;
-    console.log(e)
     setFormValues({
       ...formValues,
       [name]:{
@@ -158,7 +184,6 @@ function HuskerForm({activeStep, setActiveStep, isHuskerthon, setUserName, setAm
 
   const handleCheck = (e) => {
     const {name, checked} = e.target;
-    console.log(name)
     setFormValues({
       ...formValues,
       [name]:{
@@ -231,10 +256,10 @@ function HuskerForm({activeStep, setActiveStep, isHuskerthon, setUserName, setAm
             Dancer Release Wavier Question
         </Typography>
         <Typography variant="body1" gutterBottom>
-            <strong>Releasor</strong> realizes that participation in the <strong>HuskerThon 2023</strong> involves certain risks and danger and is a vigorous activity involving severe respiratory and cardiovascular stress. <strong>Releasor</strong> has hereby been made aware that participation in <strong>HuskerThon 2023</strong> has the following non-exclusive list of certain risks which I accept: death; head, eye, neck, and spinal injury resulting in complete or partial paralysis; brain damage; heart attack; blisters; cuts; lacerations; abrasions; concussions; contusions; strains; sprains; dislocations; fractures; cold and heat injuries; water immersion; drowning; lightning strikes; injury to bones, joints, muscles, internal organs; and environmental conditions.
+            <strong>Releasor</strong> realizes that participation in the <strong>HuskerThon 2024</strong> involves certain risks and danger and is a vigorous activity involving severe respiratory and cardiovascular stress. <strong>Releasor</strong> has hereby been made aware that participation in <strong>HuskerThon 2024</strong> has the following non-exclusive list of certain risks which I accept: death; head, eye, neck, and spinal injury resulting in complete or partial paralysis; brain damage; heart attack; blisters; cuts; lacerations; abrasions; concussions; contusions; strains; sprains; dislocations; fractures; cold and heat injuries; water immersion; drowning; lightning strikes; injury to bones, joints, muscles, internal organs; and environmental conditions.
         </Typography>
         <Typography variant="body1" gutterBottom>
-            In consideration of participation in <strong>HuskerThon 2023</strong> <strong>Releasor</strong> hereby <strong>RELEASES</strong> and covenants not-to-sue the <strong>UNIVERSITY</strong> for any and all present and future claims resulting from ordinary negligence on the part of the <strong>UNIVERSITY</strong> for property damage, personal injury, or wrongful death arising as a result of my engaging in, using <strong>University</strong> facilities and equipment, or receiving instruction for <strong>HuskerThon 2023</strong> or activities thereto, wherever, whenever, or however the same may occur. <strong>Releasor hereby voluntarily waives</strong> any and all claims or actions resulting from ordinary negligence, both present and future, that may be made by <strong>Releasor’s family, estate, personal representative, heirs, or assigns.</strong>
+            In consideration of participation in <strong>HuskerThon 2024</strong> <strong>Releasor</strong> hereby <strong>RELEASES</strong> and covenants not-to-sue the <strong>UNIVERSITY</strong> for any and all present and future claims resulting from ordinary negligence on the part of the <strong>UNIVERSITY</strong> for property damage, personal injury, or wrongful death arising as a result of my engaging in, using <strong>University</strong> facilities and equipment, or receiving instruction for <strong>HuskerThon 2024</strong> or activities thereto, wherever, whenever, or however the same may occur. <strong>Releasor hereby voluntarily waives</strong> any and all claims or actions resulting from ordinary negligence, both present and future, that may be made by <strong>Releasor’s family, estate, personal representative, heirs, or assigns.</strong>
         </Typography>
         <FormControlLabel
             control={<Checkbox name="dancer" onChange={handleCheck} />}
@@ -248,14 +273,14 @@ function HuskerForm({activeStep, setActiveStep, isHuskerthon, setUserName, setAm
             Have you been convicted of any of the following crimes:
         </Typography>
         <FormGroup>
-            <FormControlLabel control={<Checkbox />} label="Felony assault, including domestic violence related incidents" />
-            <FormControlLabel control={<Checkbox />} label="Child abuse, molestation or other crime involving endangerment of a minor" />
-            <FormControlLabel control={<Checkbox />} label="Murder" />
-            <FormControlLabel control={<Checkbox />} label="Kidnapping" />
-            <FormControlLabel control={<Checkbox />} label="Misdemeanor assault" />
-            <FormControlLabel control={<Checkbox />} label="Drug distribution activity" />
-            <FormControlLabel control={<Checkbox />} label="Felony drug possession" />
-            <FormControlLabel control={<Checkbox />} label="Any other felony or crime involving moral turpitude" />
+            <FormControlLabel control={<Checkbox />} name="commitedCrime" onChange={handleCheck} label="Felony assault, including domestic violence related incidents" />
+            <FormControlLabel control={<Checkbox />} name="commitedCrime" onChange={handleCheck} label="Child abuse, molestation or other crime involving endangerment of a minor" />
+            <FormControlLabel control={<Checkbox />} name="commitedCrime" onChange={handleCheck} label="Murder" />
+            <FormControlLabel control={<Checkbox />} name="commitedCrime" onChange={handleCheck} label="Kidnapping" />
+            <FormControlLabel control={<Checkbox />} name="commitedCrime" onChange={handleCheck} label="Misdemeanor assault" />
+            <FormControlLabel control={<Checkbox />} name="commitedCrime" onChange={handleCheck} label="Drug distribution activity" />
+            <FormControlLabel control={<Checkbox />} name="commitedCrime" onChange={handleCheck} label="Felony drug possession" />
+            <FormControlLabel control={<Checkbox />} name="commitedCrime" onChange={handleCheck} label="Any other felony or crime involving moral turpitude" />
         </FormGroup>
         <FormControlLabel
             required
@@ -294,6 +319,10 @@ function HuskerForm({activeStep, setActiveStep, isHuskerthon, setUserName, setAm
         />
 
         <Box mt={2}>
+          <FormControlLabel control={<Checkbox />} name="phoneNumber" onChange={handleCheck} label="I agree to receive promotional text messages" />
+        </Box>
+
+        <Box mt={2}>
             <LocalizationProvider dateAdapter={AdapterDayjs}>
                 <DatePicker
                     label="Date"
@@ -309,6 +338,7 @@ function HuskerForm({activeStep, setActiveStep, isHuskerthon, setUserName, setAm
         <Box sx={{ display: 'flex', justifyContent: 'flex-end' }}>
             <Button
             variant="contained"
+            disabled={btnDisabled}
             onClick={() => handleHuskerSubmit(isHuskerthon)}
             sx={{ mt: 3, ml: 1 }}
             text="Next"
