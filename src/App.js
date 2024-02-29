@@ -1,19 +1,18 @@
 import * as React from 'react';
 import CssBaseline from '@mui/material/CssBaseline';
 import AppBar from '@mui/material/AppBar';
-import Box from '@mui/material/Box';
 import Container from '@mui/material/Container';
 import Toolbar from '@mui/material/Toolbar';
 import Paper from '@mui/material/Paper';
 import Stepper from '@mui/material/Stepper';
 import Step from '@mui/material/Step';
 import StepLabel from '@mui/material/StepLabel';
-import Button from '@mui/material/Button';
 import Link from '@mui/material/Link';
 import Typography from '@mui/material/Typography';
 import { createTheme, ThemeProvider } from '@mui/material/styles';
 import HuskerForm from './HuskerForm';
 import IntroForm from './IntroForm';
+import FinalScreen from './FinalScreen'
 // import Review from './Review';
 
 function Copyright() {
@@ -31,15 +30,14 @@ function Copyright() {
 
 const steps = ['Step 1', 'Step 2', 'Details'];
 
-function getStepContent(activeStep, setActiveStep, isHuskerthon, setisHuskerthon, setUserName, setAmountRaised, setShirtSize) {
+function getStepContent(activeStep, setActiveStep, isHuskerthon, setisHuskerthon, setUserName, setAmountRaised, setShirtSize, finalScreenStep, setFinalScreenStep, userName, amountRaised, shirtSize, dinnerGroup, setDinnerGroup ) {
   switch (activeStep) {
     case 0:
-      console.log(activeStep)
       return <IntroForm activeStep={activeStep} setActiveStep={setActiveStep} setisHuskerthon={setisHuskerthon}/>;
     case 1:
-      return <HuskerForm activeStep={activeStep} setActiveStep={setActiveStep} isHuskerthon={isHuskerthon} setUserName={setUserName} setAmountRaised={setAmountRaised} setShirtSize={setShirtSize}/>;
-    // case 2:
-    //   return <FinalDetails />;
+      return <HuskerForm activeStep={activeStep} setActiveStep={setActiveStep} isHuskerthon={isHuskerthon} setUserName={setUserName} setAmountRaised={setAmountRaised} setShirtSize={setShirtSize} setFinalScreenStep={setFinalScreenStep} setDinnerGroup={setDinnerGroup}/>;
+    case 2:
+      return <FinalScreen activeStep={activeStep} setActiveStep={setActiveStep} finalScreenStep={finalScreenStep} userName={userName} amountRaised={amountRaised} shirtSize={shirtSize} dinnerGroup={dinnerGroup} setDinnerGroup={setDinnerGroup}/>;
     default:
   }
 }
@@ -52,6 +50,8 @@ export default function Checkout() {
   const [userName, setUserName] = React.useState("");
   const [amountRaised, setAmountRaised] = React.useState(0);
   const [shirtSize, setShirtSize] = React.useState("");
+  const [finalScreenStep, setFinalScreenStep] = React.useState(0);
+  const [dinnerGroup, setDinnerGroup] = React.useState("");
 
 
   // const handleNext = () => {
@@ -83,7 +83,7 @@ export default function Checkout() {
       <Container component="main" maxWidth="sm" sx={{ mb: 4 }}>
         <Paper variant="outlined" sx={{ my: { xs: 3, md: 6 }, p: { xs: 2, md: 3 } }}>
           <Typography component="h1" variant="h4" align="center">
-            {"HuskerThon 2023 Check-In"}
+            {"HuskerThon 2024 Check-In"}
           </Typography>
           <Stepper activeStep={activeStep} sx={{ pt: 3, pb: 5 }}>
             {steps.map((label) => (
@@ -93,18 +93,9 @@ export default function Checkout() {
             ))}
           </Stepper>
           <React.Fragment>
-          {activeStep === 2 ? (
-            <React.Fragment>
-              <Typography variant="h5" gutterBottom>
-                Thanks for checking-in {userName}! You raised ${amountRaised}!
-              </Typography>
-              <Typography variant="subtitle1">
-                Your shirt size is {shirtSize}.
-              </Typography>
-            </React.Fragment>
-          ) : (
-            getStepContent(activeStep, setActiveStep, isHuskerthon, setisHuskerthon, setUserName, setAmountRaised, setShirtSize)
-          )}
+          {
+            getStepContent(activeStep, setActiveStep, isHuskerthon, setisHuskerthon, setUserName, setAmountRaised, setShirtSize, finalScreenStep, setFinalScreenStep, userName, amountRaised, shirtSize, dinnerGroup,setDinnerGroup)
+          }
           </React.Fragment>
         </Paper>
         <Copyright />
