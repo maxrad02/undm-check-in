@@ -18,7 +18,7 @@ const FinalScreen = ({activeStep, setActiveStep, finalScreenStep, userName, amou
                 ------------------------------------------------------------
               </Typography>
               <Typography variant="h5">
-                Dinner Group: {dinnerGroup === 0 ? "A": "B"}
+                Dinner Group: {dinnerGroup === 1 ? "A": dinnerGroup === 2 ? "B": "C"}
               </Typography>
               <Typography variant="h5">
                   Your shirt size is {shirtSize}.
